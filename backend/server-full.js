@@ -1,3 +1,6 @@
+if (process.env.NODE_ENV !== 'production' || !process.env.OPENAI_API_KEY) {
+    require('dotenv').config();
+}
 console.log('Environment check:', { 
     hasOpenAI: !!process.env.OPENAI_API_KEY,
     hasDB: !!process.env.DATABASE_URL,
@@ -10,7 +13,7 @@ const twilio = require('twilio');
 const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
 const OpenAI = require('openai');
-require('dotenv').config();
+//require('dotenv').config();
 
 const app = express();
 const prisma = new PrismaClient();
