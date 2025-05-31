@@ -1,3 +1,8 @@
+console.log('Environment check:', { 
+    hasOpenAI: !!process.env.OPENAI_API_KEY,
+    hasDB: !!process.env.DATABASE_URL,
+    nodeEnv: process.env.NODE_ENV 
+  });
 // server-full.js - Complete LLM-powered Wedding WhatsApp Bot Backend
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -255,20 +260,20 @@ app.get('/api/guests', async (req, res) => {
 
 // API endpoint to get guest details with conversations
 app.get('/api/guests/:guestId', async (req, res) => {
-    try {
-      const guest = await prisma.guest.findUnique({
-        where: { id: req.params.guestId },
-        include: {
-          conversations: {
-            orderBy: { createdAt: 'asc' }
-          }
+  try {
+    const guest = await prisma.guest.findUnique({
+      where: { id: req.params.guestId },
+      include: {
+        conversations: {
+          orderBy: { createdAt: 'asc' }
         }
-      });
-      res.json(guest);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  });
+      }
+    });
+    res.json(guest);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Start server
 const PORT = process.env.PORT || 3000;
