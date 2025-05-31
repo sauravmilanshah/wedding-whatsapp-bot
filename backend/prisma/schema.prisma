@@ -1,0 +1,101 @@
+// prisma/schema.prisma - Database schema for Wedding WhatsApp Bot
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Wedding {
+  id                String    @id @default(cuid())
+  brideName         String
+  groomName         String
+  weddingDate       DateTime
+  venueName         String
+  venueAddress      String
+  venueMapLink      String?
+  coordinatorName   String?
+  coordinatorPhone  String?
+  transportContact  String?
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  guests            Guest[]
+  events            Event[]
+}
+
+model Guest {
+  id                  String    @id @default(cuid())
+  weddingId           String
+  wedding             Wedding   @relation(fields: [weddingId], references: [id])
+  
+  // Contact info
+  phoneNumber         String
+  name                String?
+  
+  // RSVP details
+  rsvpStatus          String?   // YES, NO, MAYBE
+  guestCount          Int?
+  invitationType      String?   // FULL_WEDDING, MAIN_ONLY, EARLY_ARRIVAL
+  
+  // Logistics
+  transportMode       String?   // FLIGHT, TRAIN, CAR, etc.
+  arrivalDateTime     String?
+  departureDateTime   String?
+  needsPickup         Boolean   @default(false)
+  
+  // Preferences
+  dietaryRestrictions String?
+  specialRequests     String?
+  
+  // Conversation state
+  lastMessageAt       DateTime?
+  
+  // Metadata
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  
+  conversations       Conversation[]
+  
+  @@unique([weddingId, phoneNumber])
+  @@index([weddingId])
+  @@index([phoneNumber])
+}
+
+model Conversation {
+  id          String    @id @default(cuid())
+  guestId     String
+  guest       Guest     @relation(fields: [guestId], references: [id])
+  
+  role        String    // 'user' or 'assistant'
+  content     String
+  
+  createdAt   DateTime  @default(now())
+  
+  @@index([guestId])
+  @@index([createdAt])
+}
+
+model Event {
+  id          String    @id @default(cuid())
+  weddingId   String
+  wedding     Wedding   @relation(fields: [weddingId], references: [id])
+  
+  date        DateTime
+  startTime   String
+  endTime     String?
+  eventName   String
+  description String?
+  venue       String
+  guestGroups String  // ['ALL', 'FULL_WEDDING', 'MAIN_ONLY', 'FAMILY'] - stored as comma-separated
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([weddingId])
+  @@index([date])
+}
