@@ -1,10 +1,12 @@
 if (process.env.NODE_ENV !== 'production' || !process.env.OPENAI_API_KEY) {
     require('dotenv').config();
 }
+console.log('OPENAI_API_KEY raw value:', process.env.OPENAI_API_KEY);
+
 console.log('Environment check:', { 
     hasOpenAI: !!process.env.OPENAI_API_KEY,
     hasDB: !!process.env.DATABASE_URL,
-    nodeEnv: process.env.NODE_ENV 
+    nodeEnv: process.env.NODE_ENV,
   });
 // server-full.js - Complete LLM-powered Wedding WhatsApp Bot Backend
 const express = require('express');
@@ -14,6 +16,7 @@ const { PrismaClient } = require('@prisma/client');
 const cors = require('cors');
 const OpenAI = require('openai');
 //require('dotenv').config();
+
 
 const app = express();
 const prisma = new PrismaClient();
